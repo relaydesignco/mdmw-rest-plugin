@@ -102,6 +102,7 @@ function create_post_type_events()
       'show_in_rest' => true,
       'supports'            => array('title', 'editor', 'custom-fields'),
       'menu_position'       => 6,
+      'taxonomies' => array('post_tag')
 
     )
   );
@@ -125,6 +126,7 @@ function create_post_type_sponsors()
       'show_in_rest' => true,
       'supports'            => array('title', 'custom-fields'),
       'menu_position'       => 6,
+      'taxonomies' => array('category')
 
     )
   );
