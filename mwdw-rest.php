@@ -4,6 +4,8 @@ Plugin Name: Midwest Design Week Rest
 Description: Setup for Midwest Design Week Rest API
 Author: David Soards
 Version: 0.1.0
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 GitHub Plugin URI: relaydesignco/mdmw-rest-plugin
 */
 
@@ -11,7 +13,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 
 // create custom events endpoint
-// http://midwestdesignweekapi.local/wp-json/events/v2/posts
+// http://midwestdesignweekapi.local/wp-json/mwdw/v1/sponsors
 function  events_endpoint($request_data)
 {
   $args = array(
@@ -27,7 +29,7 @@ function  events_endpoint($request_data)
   return  $posts;
 }
 add_action('rest_api_init', function () {
-  register_rest_route('events/v2', '/posts/', array(
+  register_rest_route('mwdw/v1', '/events/', array(
     'methods' => 'GET',
     'callback' => 'events_endpoint'
   ));
@@ -42,7 +44,7 @@ if (!defined('USE_LOCAL_ACF_CONFIGURATION') || !USE_LOCAL_ACF_CONFIGURATION) {
 
 
 // create custom sponsors endpoint
-// http://midwestdesignweekapi.local/wp-json/events/v2/posts
+// http://midwestdesignweekapi.local/wp-json/mwdw/v1/events
 function  sponsors_endpoint($request_data)
 {
   $args = array(
@@ -70,7 +72,7 @@ function dt_get_all_post_ids()
   return $all_post_ids;
 }
 add_action('rest_api_init', function () {
-  register_rest_route('sponsors/v2', '/posts/', array(
+  register_rest_route('mwdw/v1', '/sponsors/', array(
     'methods' => 'GET',
     'callback' => 'sponsors_endpoint'
   ));
