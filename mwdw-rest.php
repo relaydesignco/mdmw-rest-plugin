@@ -10,14 +10,16 @@ License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 GitHub Plugin URI: relaydesignco/mdmw-rest-plugin
 */
 
-if (!defined('ABSPATH')) exit; // Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+} // Exit if accessed directly
 
 
 // create events post type
 add_action('init', 'create_post_type_events');
 function create_post_type_events()
 {
-  $labels = array(
+    $labels = array(
     'name'               => _x('Events', 'post type general name', 'mwdw-rest'),
     'singular_name'      => _x('Event', 'post type singular name', 'mwdw-rest'),
     'menu_name'          => _x('Events', 'admin menu', 'mwdw-rest'),
@@ -34,7 +36,7 @@ function create_post_type_events()
     'not_found_in_trash' => __('No Events found in Trash.', 'mwdw-rest')
   );
 
-  $args = array(
+    $args = array(
     'labels'             => $labels,
     'description'        => __('Description.', 'mwdw-rest'),
     'public'             => true,
@@ -53,7 +55,7 @@ function create_post_type_events()
     'supports'           => array('title', 'editor', 'custom-fields'),
   );
 
-  register_post_type('events', $args);
+    register_post_type('events', $args);
 }
 
 
@@ -61,7 +63,7 @@ function create_post_type_events()
 add_action('init', 'create_post_type_sponsors');
 function create_post_type_sponsors()
 {
-  $labels = array(
+    $labels = array(
     'name'               => _x('Sponsors', 'post type general name', 'mwdw-rest'),
     'singular_name'      => _x('Sponsor', 'post type singular name', 'mwdw-rest'),
     'menu_name'          => _x('Sponsors', 'admin menu', 'mwdw-rest'),
@@ -78,7 +80,7 @@ function create_post_type_sponsors()
     'not_found_in_trash' => __('No Sponsors found in Trash.', 'mwdw-rest')
   );
 
-  $args = array(
+    $args = array(
     'labels'             => $labels,
     'description'        => __('Description.', 'mwdw-rest'),
     'public'             => true,
@@ -98,7 +100,7 @@ function create_post_type_sponsors()
     // 'taxonomies' => array('category') // for default categories
   );
 
-  register_post_type('sponsors', $args);
+    register_post_type('sponsors', $args);
 }
 
 
@@ -106,8 +108,7 @@ function create_post_type_sponsors()
 add_action('init', 'create_sponsors_taxonomy', 30);
 function create_sponsors_taxonomy()
 {
-
-  $labels = array(
+    $labels = array(
     'name'              => _x('Levels', 'taxonomy general name'),
     'singular_name'     => _x('Level', 'taxonomy singular name'),
     'search_items'      => __('Search Levels'),
@@ -121,7 +122,7 @@ function create_sponsors_taxonomy()
     'menu_name'         => __('Level'),
   );
 
-  $args = array(
+    $args = array(
     'hierarchical'          => true,
     'labels'                => $labels,
     'show_ui'               => true,
@@ -133,7 +134,7 @@ function create_sponsors_taxonomy()
     'rest_controller_class' => 'WP_REST_Terms_Controller',
   );
 
-  register_taxonomy('levels', array('sponsors'), $args);
+    register_taxonomy('levels', array('sponsors'), $args);
 }
 
 
@@ -141,7 +142,7 @@ function create_sponsors_taxonomy()
 add_action('init', 'create_post_type_speakers');
 function create_post_type_speakers()
 {
-  $labels = array(
+    $labels = array(
     'name'               => _x('Speakers', 'post type general name', 'mwdw-rest'),
     'singular_name'      => _x('Speaker', 'post type singular name', 'mwdw-rest'),
     'menu_name'          => _x('Speakers', 'admin menu', 'mwdw-rest'),
@@ -158,7 +159,7 @@ function create_post_type_speakers()
     'not_found_in_trash' => __('No Speakers found in Trash.', 'mwdw-rest')
   );
 
-  $args = array(
+    $args = array(
     'labels'             => $labels,
     'description'        => __('Description.', 'mwdw-rest'),
     'public'             => true,
@@ -177,7 +178,7 @@ function create_post_type_speakers()
     'supports'           => array('title', 'editor', 'custom-fields'),
   );
 
-  register_post_type('speaker', $args);
+    register_post_type('speaker', $args);
 }
 
 
@@ -189,34 +190,36 @@ add_filter('rest_prepare_sponsors', 'acf_to_rest_api', 10, 3);
 add_filter('rest_prepare_speaker', 'acf_to_rest_api', 10, 3);
 function acf_to_rest_api($response, $post, $request)
 {
-  if (!function_exists('get_fields')) return $response;
+    if (!function_exists('get_fields')) {
+        return $response;
+    }
 
-  if (isset($post)) {
-    $acf = get_fields($post->id);
-    $response->data['acf'] = $acf;
-  }
-  return $response;
+    if (isset($post)) {
+        $acf = get_fields($post->id);
+        $response->data['acf'] = $acf;
+    }
+    return $response;
 }
 
 
 // create custom events endpoint
 // http://midwestdesignweekapi.local/wp-json/mwdw/v1/sponsors
-function  events_endpoint($request_data)
+function events_endpoint($request_data)
 {
-  $args = array(
+    $args = array(
     'post_type' => 'events',
     'posts_per_page' => -1,
     'numberposts' => -1,
     'post_status' => 'publish',
   );
-  $posts = get_posts($args);
-  foreach ($posts as $key => $post) {
-    $posts[$key]->acf = get_fields($post->ID);
-  }
-  return  $posts;
+    $posts = get_posts($args);
+    foreach ($posts as $key => $post) {
+        $posts[$key]->acf = get_fields($post->ID);
+    }
+    return  $posts;
 }
 add_action('rest_api_init', function () {
-  register_rest_route('mwdw/v1', '/events/', array(
+    register_rest_route('mwdw/v1', '/events/', array(
     'methods' => 'GET',
     'callback' => 'events_endpoint'
   ));
@@ -225,22 +228,22 @@ add_action('rest_api_init', function () {
 
 // create custom sponsors endpoint
 // http://midwestdesignweekapi.local/wp-json/mwdw/v1/events
-function  sponsors_endpoint($request_data)
+function sponsors_endpoint($request_data)
 {
-  $args = array(
+    $args = array(
     'post_type' => 'sponsors',
     'posts_per_page' => -1,
     'numberposts' => -1,
     'post_status' => 'publish',
   );
-  $posts = get_posts($args);
-  foreach ($posts as $key => $post) {
-    $posts[$key]->acf = get_fields($post->ID);
-  }
-  return  $posts;
+    $posts = get_posts($args);
+    foreach ($posts as $key => $post) {
+        $posts[$key]->acf = get_fields($post->ID);
+    }
+    return  $posts;
 }
 add_action('rest_api_init', function () {
-  register_rest_route('mwdw/v1', '/sponsors/', array(
+    register_rest_route('mwdw/v1', '/sponsors/', array(
     'methods' => 'GET',
     'callback' => 'sponsors_endpoint'
   ));
