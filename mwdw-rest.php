@@ -3,7 +3,7 @@
 Plugin Name: Midwest Design Week Rest
 Description: Setup for Midwest Design Week Rest API
 Author: David Soards
-Version: 0.1.0
+Version: 0.1.1
 Text Domain: 	mwdw-rest
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -181,6 +181,49 @@ function create_post_type_speakers()
     register_post_type('speaker', $args);
 }
 
+// create options post type
+add_action('init', 'create_post_type_options');
+function create_post_type_options()
+{
+    $labels = array(
+    'name'               => _x('Options', 'post type general name', 'mwdw-rest'),
+    'singular_name'      => _x('Options', 'post type singular name', 'mwdw-rest'),
+    'menu_name'          => _x('Options', 'admin menu', 'mwdw-rest'),
+    'name_admin_bar'     => _x('Options', 'add new on admin bar', 'mwdw-rest'),
+    'add_new'            => _x('Add New', 'Options', 'mwdw-rest'),
+    'add_new_item'       => __('Add New Options', 'mwdw-rest'),
+    'new_item'           => __('New Options', 'mwdw-rest'),
+    'edit_item'          => __('Edit Options', 'mwdw-rest'),
+    'view_item'          => __('View Options', 'mwdw-rest'),
+    'all_items'          => __('All Options', 'mwdw-rest'),
+    'search_items'       => __('Search Options', 'mwdw-rest'),
+    'parent_item_colon'  => __('Parent Options:', 'mwdw-rest'),
+    'not_found'          => __('No Options found.', 'mwdw-rest'),
+    'not_found_in_trash' => __('No Options found in Trash.', 'mwdw-rest')
+  );
+
+    $args = array(
+    'labels'             => $labels,
+    'description'        => __('Description.', 'mwdw-rest'),
+    'public'             => true,
+    'publicly_queryable' => true,
+    'show_ui'            => true,
+    'show_in_menu'       => true,
+    'query_var'          => true,
+    'rewrite'            => array('slug' => 'option'),
+    'capability_type'    => 'post',
+    'has_archive'        => true,
+    'hierarchical'       => false,
+    'menu_position'      => 5,
+    'show_in_rest'       => true,
+    'rest_base'          => 'options',
+    'rest_controller_class' => 'WP_REST_Posts_Controller',
+    'supports'           => array('title', 'editor', 'custom-fields'),
+  );
+
+    register_post_type('option', $args);
+}
+
 
 // add ACF fields to post types default and custom endpoints
 // http://midwestdesignweekapi.local/wp-json/wp/v2/posts?page=1&per_page=100&_embed=1
@@ -188,6 +231,7 @@ add_filter('rest_prepare_post', 'acf_to_rest_api', 10, 3);
 add_filter('rest_prepare_events', 'acf_to_rest_api', 10, 3);
 add_filter('rest_prepare_sponsors', 'acf_to_rest_api', 10, 3);
 add_filter('rest_prepare_speaker', 'acf_to_rest_api', 10, 3);
+add_filter('rest_prepare_option', 'acf_to_rest_api', 10, 3);
 function acf_to_rest_api($response, $post, $request)
 {
     if (!function_exists('get_fields')) {
