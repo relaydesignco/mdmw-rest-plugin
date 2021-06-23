@@ -218,7 +218,7 @@ function create_post_type_options()
     'show_in_rest'       => true,
     'rest_base'          => 'options',
     'rest_controller_class' => 'WP_REST_Posts_Controller',
-    'supports'           => array('title', 'editor', 'custom-fields'),
+    'supports'           => array('title', 'custom-fields'),
   );
 
     register_post_type('option', $args);
